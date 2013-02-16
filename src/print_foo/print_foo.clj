@@ -33,3 +33,7 @@
                                  seconds)))
        (#'print-and-return "let-body-value " (do ~@body)))))
 
+(defmacro print-if [test expr1 expr2]
+  `(if (#'print-and-return '~test " " ~test)
+     (#'print-and-return '~expr1 " " ~expr1)
+     (#'print-and-return '~expr2 " " ~expr2)))
