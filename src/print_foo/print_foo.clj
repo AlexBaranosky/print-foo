@@ -28,7 +28,7 @@
         seconds (take-nth 2 (rest bindings))]
     `(let ~(vec (interleave firsts
                             (map (fn [lhs rhs]
-                                   `(print-and-return '~lhs " " ~rhs))
+                                   `(#'print-and-return '~lhs " " ~rhs))
                                  firsts
                                  seconds)))
        (#'print-and-return "let-body-value " (do ~@body)))))
