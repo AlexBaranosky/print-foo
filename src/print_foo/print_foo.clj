@@ -33,7 +33,16 @@
                                  seconds)))
        (#'print-and-return "let-body-value " (do ~@body)))))
 
-(defmacro print-if [test expr1 expr2]
+(defmacro print-if
+  "Diagnostic tool for printing the values at each step of an `if`"
+  [test expr1 expr2]
   `(if (#'print-and-return '~test " " ~test)
      (#'print-and-return '~expr1 " " ~expr1)
      (#'print-and-return '~expr2 " " ~expr2)))
+
+(defmacro print-cond
+  "Diagnostic tool for printing the values at each step of a `cond`"
+  [& body]
+  (cons 'cond (for [[test expr] (partition 2 body)
+                    sym [test (list `#'print-and-return "test: " test "\nvalue: " expr)]]
+                sym)))
