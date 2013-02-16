@@ -12,17 +12,14 @@
 (defmacro print->
   "Diagnostic tool for printing the values at each step of a `->`"
   [& body]
-  (let [counter-sym (gensym "counter")
-        logger `(#(do (#'print-and-return @~counter-sym "-> " %)
-                      (swap! ~counter-sym inc)
-                      %))]
-    `(let [~counter-sym (atom 1)]
-       (-> ~@(interpose logger body) ~logger))))
+  (let [print-forms (map #(list `(fn [x#] (#'print-and-return ~% "-> " x#))) (range))]
+    (cons '-> (interleave body print-forms))))
 
 (defmacro print->>
   "Diagnostic tool for printing the values at each step of a `->>`"
   [& body]
-  (cons '->> (interleave body (map #(list `#'print-and-return (str % "->> ")) (range)))))
+  (let [print-forms (map #(list `#'print-and-return % "->> ") (range))]
+    (cons '->> (interleave body print-forms))))
 
 (defmacro print-let
   "Diagnostic tool for printing the values at each step of a `let`"
