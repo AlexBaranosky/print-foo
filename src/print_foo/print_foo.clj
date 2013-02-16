@@ -3,7 +3,7 @@
   (:require [gui-diff.core :as gui-diff]))
 
 
-(defn print-and-return [& xs]
+(defn- print-and-return [& xs]
   (when (seq (butlast xs))
     (print (apply str (butlast xs))))
   (gui-diff/p (last xs))
