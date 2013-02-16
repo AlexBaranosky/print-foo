@@ -2,7 +2,7 @@
 
 A Clojure library of print debugging macros.  
 
-Just add "print-" to the front of a normal `->>, `->`, `let`, etc and prints useful information. (More macros planned.)
+Just add "print-" to the front of a normal `->>`, `->`, `let`, etc and prints useful information. (More macros planned.)
 
 ## Leiningen
 
