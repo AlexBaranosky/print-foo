@@ -35,8 +35,8 @@ user=> (print->> [1 2 3] (mapv inc) (mapv dec))
 
 ## Contributors
 
-[Alex Baranosky](https://github.com/AlexBaranosky)
-[Punit Rathore](https://github.com/punitrathore)
+*  [Alex Baranosky](https://github.com/AlexBaranosky)
+*  [Punit Rathore](https://github.com/punitrathore)
 
 ## License
 
