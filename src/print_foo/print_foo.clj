@@ -49,16 +49,16 @@
 
 (defmacro print-defn
   "Diagnostic tool for printing the values at each step of a `defn`"
-  [name arg-vec & body]
-  `(defn ~name ~arg-vec
+  [fn-name arg-vec & body]
+  `(defn ~fn-name ~arg-vec
      ~@(map (fn [x] `(#'print-and-return '~x " " ~x)) arg-vec)
      nil
-     ~@body))
+     (#'print-and-return "defn '" '~fn-name "' result: " (do ~@body))))
 
 (defmacro print-defn-
   "Diagnostic tool for printing the values at each step of a `defn-`"
-  [name arg-vec & body]
-  `(defn- ~name ~arg-vec
+  [fn-name arg-vec & body]
+  `(defn- ~fn-name ~arg-vec
      ~@(map (fn [x] `(#'print-and-return '~x " " ~x)) arg-vec)
      nil
-     ~@body))
+     (#'print-and-return "defn- '" '~fn-name "' result:" (do ~@body))))
