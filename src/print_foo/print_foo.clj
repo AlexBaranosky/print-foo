@@ -28,7 +28,7 @@
         seconds (take-nth 2 (rest bindings))]
     `(let ~(vec (interleave firsts
                             (map (fn [lhs rhs]
-                                   `(foo '~lhs " " ~rhs))
+                                   `(print-and-return '~lhs " " ~rhs))
                                  firsts
                                  seconds)))
        (#'print-and-return "let-body-value " (do ~@body)))))
@@ -60,5 +60,4 @@
   [fn-name arg-vec & body]
   `(defn- ~fn-name ~arg-vec
      ~@(map (fn [x] `(#'print-and-return '~x " " ~x)) arg-vec)
-     nil
-     (#'print-and-return "defn- '" '~fn-name "' result:" (do ~@body))))
+     (#'print-and-return "defn- '" '~fn-name "' result: " (do ~@body))))
