@@ -46,3 +46,19 @@
   (cons 'cond (for [[test expr] (partition 2 body)
                     sym [test (list `#'print-and-return "test: " test "\nvalue: " expr)]]
                 sym)))
+
+(defmacro print-defn
+  "Diagnostic tool for printing the values at each step of a `defn`"
+  [name arg-vec & body]
+  `(defn ~name ~arg-vec
+     ~@(map (fn [x] `(#'print-and-return '~x " " ~x)) arg-vec)
+     nil
+     ~@body))
+
+(defmacro print-defn-
+  "Diagnostic tool for printing the values at each step of a `defn-`"
+  [name arg-vec & body]
+  `(defn- ~name ~arg-vec
+     ~@(map (fn [x] `(#'print-and-return '~x " " ~x)) arg-vec)
+     nil
+     ~@body))
