@@ -32,7 +32,7 @@ a 2
 b 3
 c 5
 d 12
-let-body-value 5
+let result: 5
 5
 
 user=> (print-defn f [a b] (* a b))
