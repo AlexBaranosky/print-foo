@@ -12,13 +12,13 @@
 (defmacro print->
   "Diagnostic tool for printing the values at each step of a `->`"
   [& body]
-  (let [print-forms (map #(list `(fn [x#] (#'print-and-return ~% "-> " x#))) (range))]
+  (let [print-forms (map #(list `(fn [x#] (#'print-and-return '~% " " x#))) body)]
     (cons '-> (interleave body print-forms))))
 
 (defmacro print->>
   "Diagnostic tool for printing the values at each step of a `->>`"
   [& body]
-  (let [print-forms (map #(list `#'print-and-return % "->> ") (range))]
+  (let [print-forms (map (fn [x] `(#'print-and-return '~x " ")) body)]
     (cons '->> (interleave body print-forms))))
 
 (defmacro print-let
