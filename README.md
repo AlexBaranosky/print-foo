@@ -1,4 +1,4 @@
-## print-Foo
+## print-foo
 
 A Clojure library of print debugging macros.  
 
@@ -7,7 +7,7 @@ Just add "print-" to the front of a normal `->>`, `->`, `let`, `defn`, `defn-`, 
 ## Leiningen
 
 ```clj
-[print-foo "0.2.2"]
+[print-foo "0.2.3"]
 ```
 
 ## Usage
@@ -16,16 +16,19 @@ Just add "print-" to the front of a normal `->>`, `->`, `let`, `defn`, `defn-`, 
 user=> (use 'print-foo.print-foo)
 nil
 
-user=> (print->> [1 2 3] (mapv inc) (mapv dec))
-0->> [1 2 3]
-1->> [2 3 4]
-2->> [1 2 3]
+user> (print->> [1 2 3] (mapv inc) (mapv dec))
+[1 2 3] [1 2 3]
+(mapv inc) [2 3 4]
+(mapv dec) [1 2 3]
 [1 2 3]
 
-user=> (print-> 4 inc)
-0-> 4
-1-> 5
-5
+user> (print-> 1 inc dec inc dec)
+1 1
+inc 2
+dec 1
+inc 2
+dec 1
+1
 
 user=> (print-let [a 2 b 3 c (+ a b) d (+ c 7)] c)
 a 2
