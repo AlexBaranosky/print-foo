@@ -65,7 +65,7 @@
 (defmacro print-sexp
   "Diagnostic tool for printing the values at each step of a given s-expression"
   [sexp]
-  (if-not (sequential? sexp)
+  (if-not (list? sexp)
     sexp
     `(#'print-and-return
       '~sexp
