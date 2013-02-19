@@ -7,7 +7,7 @@ Just add "print-" to the front of a normal `->>`, `->`, `let`, `defn`, `defn-`, 
 ## Leiningen
 
 ```clj
-[print-foo "0.2.3"]
+[print-foo "0.2.4"]
 ```
 
 ## Usage
@@ -16,13 +16,13 @@ Just add "print-" to the front of a normal `->>`, `->`, `let`, `defn`, `defn-`, 
 user=> (use 'print-foo.print-foo)
 nil
 
-user> (print->> [1 2 3] (mapv inc) (mapv dec))
+user=> (print->> [1 2 3] (mapv inc) (mapv dec))
 [1 2 3] [1 2 3]
 (mapv inc) [2 3 4]
 (mapv dec) [1 2 3]
 [1 2 3]
 
-user> (print-> 1 inc dec inc dec)
+user=> (print-> 1 inc dec inc dec)
 1 1
 inc 2
 dec 1
@@ -62,6 +62,13 @@ user=> (print-if (odd? 9) 1 2)
 (odd? 9) true
 1 1
 1
+
+user=> (print-sexp (str (+ 3 4) (+ 5 (* 6 2)) 4))
+(+ 3 4) 7
+(* 6 2) 12
+(+ 5 (* 6 2)) 17
+(str (+ 3 4) (+ 5 (* 6 2)) 4) "7174"
+"7174"
 ```
 
 ## Contributors

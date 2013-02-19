@@ -61,3 +61,18 @@
   `(defn- ~fn-name ~arg-vec
      ~@(map (fn [x] `(#'print-and-return '~x " " ~x)) arg-vec)
      (#'print-and-return "defn- '" '~fn-name "' result: " (do ~@body))))
+
+(defmacro print-sexp
+  "Diagnostic tool for printing the values at each step of a given s-expression"
+  [sexp]
+  (if-not (sequential? sexp)
+    sexp
+    `(#'print-and-return
+      '~sexp
+      " "
+      ~(map-indexed (fn [idx x]
+                      (if (zero? idx)
+                        x
+                        `(print-sexp ~x)))
+                    sexp))))
+
