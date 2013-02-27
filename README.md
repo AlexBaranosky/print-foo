@@ -7,13 +7,13 @@ Just add "print-" to the front of a normal `->>`, `->`, `let`, `defn`, `defn-`, 
 ## Leiningen
 
 ```clj
-[print-foo "0.2.5"]
+[print-foo "0.3.0"]
 ```
 
 ## Usage
 
 ```clojure
-user=> (use 'print-foo.print-foo)
+user=> (use 'print.foo)
 nil
 
 user=> (print->> [1 2 3] (mapv inc) (mapv dec))
