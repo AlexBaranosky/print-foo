@@ -44,7 +44,7 @@
   "Diagnostic tool for printing the values at each step of a `cond`"
   [& body]
   (cons 'cond (for [[test expr] (partition 2 body)
-                    sym [test `(#'print-and-return "test: " ~test "\nvalue: " ~expr)]]
+                    sym [test `(#'print-and-return "test: " '~test "\nvalue: " ~expr)]]
                 sym)))
 
 (defmacro print-defn
