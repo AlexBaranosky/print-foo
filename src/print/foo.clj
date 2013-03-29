@@ -93,9 +93,18 @@
 (defmacro print-defn-
   "Diagnostic tool for printing the values at each step of a `defn-`"
   [fn-name arg-vec & body]
-  `(defn- ~fn-name ~arg-vec
-     ~@(map (fn [x] `(#'print-and-return '~x " " ~x)) arg-vec)
-     (#'print-and-return "defn- '" '~fn-name "' result: " (do ~@body))))
+  (let [new-arg-vec (vec (map expand-arg arg-vec))]
+    `(defn- ~fn-name ~new-arg-vec
+       ~@(keep (fn [x]
+                (cond (and (not= '& x) (symbol? x))
+                      `(#'print-and-return '~x " " ~x)
+
+                      (not= '& x)
+                      (let [[form as] (single-destructuring-arg->form+name x)]
+                        `(#'print-and-return '~x " " ~as))))
+              new-arg-vec)
+       nil
+       (#'print-and-return "defn- '" '~fn-name "' result: " (do ~@body)))))
 
 (defmacro print-sexp
   "Diagnostic tool for printing the values at each step of a given s-expression"
