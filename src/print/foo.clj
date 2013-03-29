@@ -3,6 +3,33 @@
   (:require [gui-diff.core :as gui-diff]))
 
 
+(defn- single-destructuring-arg->form+name
+  "Turns any one binding arg (which may be a destructuring binding) into a vector
+  where the left elem is the arg with a possible :as added to it.
+  And the rght side is the symbol referring to the arg itself."
+  [arg-form]
+  (let [as-symbol (gensym 'symbol-for-destructured-arg)
+        snd-to-last-is-as? #(= :as (second (reverse %)))]
+    (cond (and (vector? arg-form) (snd-to-last-is-as? arg-form))
+          [arg-form (last arg-form)]
+
+          (vector? arg-form)
+          [(-> arg-form (conj :as) (conj as-symbol)) as-symbol]
+
+          (and (map? arg-form) (contains? arg-form :as))
+          [arg-form (:as arg-form)]
+
+          (map? arg-form)
+          [(assoc arg-form :as as-symbol) as-symbol]
+
+          :else
+          [arg-form arg-form])))
+
+(defn- expand-arg [arg]
+  (if (symbol? arg)
+    arg
+    (first (single-destructuring-arg->form+name arg))))
+
 (defn- print-and-return [& xs]
   (when (seq (butlast xs))
     (print (apply str (butlast xs))))
@@ -50,10 +77,18 @@
 (defmacro print-defn
   "Diagnostic tool for printing the values at each step of a `defn`"
   [fn-name arg-vec & body]
-  `(defn ~fn-name ~arg-vec
-     ~@(map (fn [x] `(#'print-and-return '~x " " ~x)) arg-vec)
-     nil
-     (#'print-and-return "defn '" '~fn-name "' result: " (do ~@body))))
+  (let [new-arg-vec (vec (map expand-arg arg-vec))]
+    `(defn ~fn-name ~new-arg-vec
+       ~@(keep (fn [x]
+                (cond (and (not= '& x) (symbol? x))
+                      `(#'print-and-return '~x " " ~x)
+
+                      (not= '& x)
+                      (let [[form as] (single-destructuring-arg->form+name x)]
+                        `(#'print-and-return '~x " " ~as))))
+              new-arg-vec)
+       nil
+       (#'print-and-return "defn '" '~fn-name "' result: " (do ~@body)))))
 
 (defmacro print-defn-
   "Diagnostic tool for printing the values at each step of a `defn-`"
