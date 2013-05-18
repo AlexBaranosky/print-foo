@@ -1,6 +1,6 @@
 (ns print.foo
   "Macros for printing diagnostic information while debugging or developing."
-  (:require [gui-diff.core :as gui-diff]))
+  (:require [gui.diff :as gui-diff]))
 
 
 (defn- single-destructuring-arg->form+name
