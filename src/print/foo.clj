@@ -123,3 +123,11 @@
                         `(print-sexp ~x)))
                     sexp))))
 
+(defmacro prit 
+  "Diagnostic tool for printing the otuput of the form"
+   [& form]
+  `(let [res# (~@form)]
+     (prn res#)
+     res#))
+
+

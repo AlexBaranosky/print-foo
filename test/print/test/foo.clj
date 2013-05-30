@@ -35,3 +35,6 @@
   (d2 [3 7])
   (f2 3 [7] {:d 11})
   (g2 3 [7] {:d 11}))
+
+(deftest test-print-prit
+   (is (= 3 (prit + 1 2))))
