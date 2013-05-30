@@ -17,6 +17,9 @@
 (print-defn- f2 [x [y] {:keys [d]}] (+ x y d))
 (print-defn- g2 [x [y] {:keys [d] :as e}] (+ x y d (count e)))
 
+(deftest test-print-and-return
+  (is (= 1 (print-and-return "ONE:: " (inc 0)))))
+
 (deftest test-print-print-defn
   (a)
   (b 3 7)
