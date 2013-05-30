@@ -30,7 +30,10 @@
     arg
     (first (single-destructuring-arg->form+name arg))))
 
-(defn- print-and-return [& xs]
+(defn print-and-return
+  "Diagnostic tool for printing the result of evaluating an s-expression.
+   Any initial args over 1, are printed as strings, and generally used as a label."
+  [& xs]
   (when (seq (butlast xs))
     (print (apply str (butlast xs))))
   (gui-diff/p (last xs))
