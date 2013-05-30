@@ -69,6 +69,10 @@ user=> (print-sexp (str (+ 3 4) (+ 5 (* 6 2)) 4))
 (+ 5 (* 6 2)) 17
 (str (+ 3 4) (+ 5 (* 6 2)) 4) "7174"
 "7174"
+
+user=> (print-and-return "ONE:: " (inc 0))
+ONE:: 1
+1
 ```
 
 ## Contributors
