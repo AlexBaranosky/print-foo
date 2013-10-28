@@ -83,13 +83,13 @@
   (let [new-arg-vec (vec (map expand-arg arg-vec))]
     `(defn ~fn-name ~new-arg-vec
        ~@(keep (fn [x]
-                (cond (and (not= '& x) (symbol? x))
-                      `(#'print-and-return '~x " " ~x)
+                 (cond (and (not= '& x) (symbol? x))
+                       `(#'print-and-return '~x " " ~x)
 
-                      (not= '& x)
-                      (let [[form as] (single-destructuring-arg->form+name x)]
-                        `(#'print-and-return '~x " " ~as))))
-              new-arg-vec)
+                       (not= '& x)
+                       (let [[form as] (single-destructuring-arg->form+name x)]
+                         `(#'print-and-return '~x " " ~as))))
+               new-arg-vec)
        nil
        (#'print-and-return "defn '" '~fn-name "' result: " (do ~@body)))))
 
@@ -99,27 +99,89 @@
   (let [new-arg-vec (vec (map expand-arg arg-vec))]
     `(defn- ~fn-name ~new-arg-vec
        ~@(keep (fn [x]
-                (cond (and (not= '& x) (symbol? x))
-                      `(#'print-and-return '~x " " ~x)
+                 (cond (and (not= '& x) (symbol? x))
+                       `(#'print-and-return '~x " " ~x)
 
-                      (not= '& x)
-                      (let [[form as] (single-destructuring-arg->form+name x)]
-                        `(#'print-and-return '~x " " ~as))))
-              new-arg-vec)
+                       (not= '& x)
+                       (let [[form as] (single-destructuring-arg->form+name x)]
+                         `(#'print-and-return '~x " " ~as))))
+               new-arg-vec)
        nil
        (#'print-and-return "defn- '" '~fn-name "' result: " (do ~@body)))))
+
+
+;;; `print-sexp` print.foo's code-walking macro :)
+
+(defmulti parse-item (fn [x]
+                       (cond (list? x)   :list
+                             (vector? x) :vector
+                             (set? x)    :set
+                             (map? x)    :map
+                             :else       :single)))
+
+(defmulti parse-list (fn [[sym & _]]
+                       sym))
+
+
+(defmethod parse-item :list [lst]
+  (comment (println "LIST: " lst))
+  (parse-list lst))
+
+(defmethod parse-item :vector [v]
+  (comment (println "VECTOR: " v))
+  (vec (map parse-item v)))
+
+(defmethod parse-item :set [s]
+  (comment (println "SET: " s))
+  s #_(set (map parse-item s)))
+
+(defmethod parse-item :map [m]
+  (comment (println "MAP: " m))
+  (into (empty m)
+        (for [[k v] m]
+          [(parse-item k) (parse-item v)])))
+
+(defmethod parse-item :single [x]
+  `(#'print-and-return '~x " " ~x))
+
+
+(defmethod parse-list '-> [[_ & args]]
+  `(print-> ~@args))
+
+(defmethod parse-list '->> [[_ & args]]
+  `(print->> ~@args))
+
+(defmethod parse-list 'let [[_ & [bindings & body]]]
+  `(print-let ~(vec bindings) ~@(map parse-item body)))
+
+(defmethod parse-list 'if [[_ & args]]
+  `(print-if ~@(map parse-item args)))
+
+(defmethod parse-list 'cond [[_ & args]]
+  (let [tests (take-nth 2 args)
+        exprs (take-nth 2 (rest args))]
+    `(print-cond ~@(interleave tests)
+                 ~@(map parse-item exprs))))
+
+(defmethod parse-list 'defn [[_ & args]]
+  `(print-defn ~@args))
+
+(defmethod parse-list 'defn- [[_ & args]]
+  `(print-defn- ~@args))
+
+(defmethod parse-list :default [[sym & args]]
+  (let [l (concat [sym] args)]
+    `(#'print-and-return
+      '~l
+      " "
+      ~(map (fn [idx x]
+              (if (zero? idx)
+                x
+                (parse-item x)))
+            (range)
+            l))))
 
 (defmacro print-sexp
   "Diagnostic tool for printing the values at each step of a given s-expression"
   [sexp]
-  (if-not (list? sexp)
-    sexp
-    `(#'print-and-return
-      '~sexp
-      " "
-      ~(map-indexed (fn [idx x]
-                      (if (zero? idx)
-                        x
-                        `(print-sexp ~x)))
-                    sexp))))
-
+  (parse-item sexp))
