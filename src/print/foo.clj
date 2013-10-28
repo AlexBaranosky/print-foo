@@ -124,19 +124,15 @@
 
 
 (defmethod parse-item :list [lst]
-  (comment (println "LIST: " lst))
   (parse-list lst))
 
 (defmethod parse-item :vector [v]
-  (comment (println "VECTOR: " v))
   (vec (map parse-item v)))
 
 (defmethod parse-item :set [s]
-  (comment (println "SET: " s))
-  s #_(set (map parse-item s)))
+  (set (map parse-item s)))
 
 (defmethod parse-item :map [m]
-  (comment (println "MAP: " m))
   (into (empty m)
         (for [[k v] m]
           [(parse-item k) (parse-item v)])))
