@@ -131,10 +131,10 @@
   (parse-list lst))
 
 (defmethod parse-item :vector [v]
-  (vec (map parse-item v)))
+  (into (empty v) (map parse-item v)))
 
 (defmethod parse-item :set [s]
-  (set (map parse-item s)))
+  (into (empty s) (map parse-item s)))
 
 (defmethod parse-item :map [m]
   (into (empty m)
