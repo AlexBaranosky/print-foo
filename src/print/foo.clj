@@ -39,16 +39,20 @@
   (gui-diff/p (last xs))
   (last xs))
 
+(def tap
+  "Quicker-to-type version of `print-and-return` with \" *** \" appended to the front"
+  (partial print-and-return " *** "))
+
 (defmacro print->
   "Diagnostic tool for printing the values at each step of a `->`"
   [& body]
-  (let [print-forms (map #(list `(fn [x#] (#'print-and-return '~% " " x#))) body)]
+  (let [print-forms (map #(list `(fn [x#] (print-and-return '~% " " x#))) body)]
     (cons '-> (interleave body print-forms))))
 
 (defmacro print->>
   "Diagnostic tool for printing the values at each step of a `->>`"
   [& body]
-  (let [print-forms (map (fn [x] `(#'print-and-return '~x " ")) body)]
+  (let [print-forms (map (fn [x] `(print-and-return '~x " ")) body)]
     (cons '->> (interleave body print-forms))))
 
 (defmacro print-let
@@ -58,23 +62,23 @@
         seconds (take-nth 2 (rest bindings))]
     `(let ~(vec (interleave firsts
                             (map (fn [lhs rhs]
-                                   `(#'print-and-return '~lhs " " ~rhs))
+                                   `(print-and-return '~lhs " " ~rhs))
                                  firsts
                                  seconds)))
-       (#'print-and-return "let result: " (do ~@body)))))
+       (print-and-return "let result: " (do ~@body)))))
 
 (defmacro print-if
   "Diagnostic tool for printing the values at each step of an `if`"
   [test expr1 expr2]
-  `(if (#'print-and-return '~test " " ~test)
-     (#'print-and-return '~expr1 " " ~expr1)
-     (#'print-and-return '~expr2 " " ~expr2)))
+  `(if (print-and-return '~test " " ~test)
+     (print-and-return '~expr1 " " ~expr1)
+     (print-and-return '~expr2 " " ~expr2)))
 
 (defmacro print-cond
   "Diagnostic tool for printing the values at each step of a `cond`"
   [& body]
   (cons 'cond (for [[test expr] (partition 2 body)
-                    sym [test `(#'print-and-return "test: " '~test "\nvalue: " ~expr)]]
+                    sym [test `(print-and-return "test: " '~test "\nvalue: " ~expr)]]
                 sym)))
 
 (defmacro print-defn
@@ -84,14 +88,14 @@
     `(defn ~fn-name ~new-arg-vec
        ~@(keep (fn [x]
                  (cond (and (not= '& x) (symbol? x))
-                       `(#'print-and-return '~x " " ~x)
+                       `(print-and-return '~x " " ~x)
 
                        (not= '& x)
                        (let [[form as] (single-destructuring-arg->form+name x)]
-                         `(#'print-and-return '~x " " ~as))))
+                         `(print-and-return '~x " " ~as))))
                new-arg-vec)
        nil
-       (#'print-and-return "defn '" '~fn-name "' result: " (do ~@body)))))
+       (print-and-return "defn '" '~fn-name "' result: " (do ~@body)))))
 
 (defmacro print-defn-
   "Diagnostic tool for printing the values at each step of a `defn-`"
@@ -100,14 +104,14 @@
     `(defn- ~fn-name ~new-arg-vec
        ~@(keep (fn [x]
                  (cond (and (not= '& x) (symbol? x))
-                       `(#'print-and-return '~x " " ~x)
+                       `(print-and-return '~x " " ~x)
 
                        (not= '& x)
                        (let [[form as] (single-destructuring-arg->form+name x)]
-                         `(#'print-and-return '~x " " ~as))))
+                         `(print-and-return '~x " " ~as))))
                new-arg-vec)
        nil
-       (#'print-and-return "defn- '" '~fn-name "' result: " (do ~@body)))))
+       (print-and-return "defn- '" '~fn-name "' result: " (do ~@body)))))
 
 
 ;;; `print-sexp` print.foo's code-walking macro :)
@@ -138,7 +142,7 @@
           [(parse-item k) (parse-item v)])))
 
 (defmethod parse-item :single [x]
-  `(#'print-and-return '~x " " ~x))
+  `(print-and-return '~x " " ~x))
 
 
 (defmethod parse-list '-> [[_ & args]]
@@ -167,7 +171,7 @@
 
 (defmethod parse-list :default [[sym & args]]
   (let [l (concat [sym] args)]
-    `(#'print-and-return
+    `(print-and-return
       '~l
       " "
       ~(map (fn [idx x]

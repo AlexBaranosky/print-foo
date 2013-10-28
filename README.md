@@ -80,23 +80,28 @@ print.foo=> (print-sexp (str (+ 3 4) (+ 5 (* 6 2)) 4))
 ;;  etc, where possible with print.foo versions
 
 print.foo=> (pprint (macroexpand '(print-sexp (str (+ 3 4) (-> 5 (* 6) (* 2)) 4))))
-(#'print.foo/print-and-return
+(print.foo/print-and-return
  '(str (+ 3 4) (-> 5 (* 6) (* 2)) 4)
  " "
  (str
-  (#'print.foo/print-and-return
+  (print.foo/print-and-return
    '(+ 3 4)
    " "
    (+
-    (#'print.foo/print-and-return '3 " " 3)
-    (#'print.foo/print-and-return '4 " " 4)))
+    (print.foo/print-and-return '3 " " 3)
+    (print.foo/print-and-return '4 " " 4)))
   (print.foo/print-> 5 (* 6) (* 2))
-  (#'print.foo/print-and-return '4 " " 4)))
+  (print.foo/print-and-return '4 " " 4)))
 
 
-print.foo=> (+ 1 2 (print-and-return "ONE:: " (inc x)))
-ONE:: 1
-1
+print.foo=> (+ 1 2 (print-and-return "ONE:: " (inc 4)))
+ONE:: 4
+7
+
+print.foo> (+ 1 2 (tap (inc 4)))
+ *** 5
+8
+
 ```
 
 ## Author
