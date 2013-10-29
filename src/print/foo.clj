@@ -142,7 +142,7 @@
           [(parse-item k) (parse-item v)])))
 
 (defmethod parse-item :single [x]
-  `(print-and-return '~x " " ~x))
+  x)
 
 
 (defmethod parse-list '-> [[_ & args]]
@@ -152,16 +152,17 @@
   `(print->> ~@args))
 
 (defmethod parse-list 'let [[_ & [bindings & body]]]
-  `(print-let ~(vec bindings) ~@(map parse-item body)))
+  (let [bdg-names (take-nth 2 bindings)
+        bdg-vals (take-nth 2 (rest bindings))]
+    `(print-let ~(vec (interleave bdg-names
+                                  (map parse-item bdg-vals)))
+                ~@(map parse-item body))))
 
 (defmethod parse-list 'if [[_ & args]]
   `(print-if ~@(map parse-item args)))
 
 (defmethod parse-list 'cond [[_ & args]]
-  (let [tests (take-nth 2 args)
-        exprs (take-nth 2 (rest args))]
-    `(print-cond ~@(interleave tests)
-                 ~@(map parse-item exprs))))
+  `(cond ~@(map parse-item args)))
 
 (defmethod parse-list 'defn [[_ & args]]
   `(print-defn ~@args))
@@ -185,3 +186,4 @@
   "Diagnostic tool for printing the values at each step of a given s-expression"
   [sexp]
   (parse-item sexp))
+

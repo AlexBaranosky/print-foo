@@ -79,19 +79,37 @@ print.foo=> (print-sexp (str (+ 3 4) (+ 5 (* 6 2)) 4))
 ;; `print-sexp` replaces normal code like ->, ->>, let, cond, if, 
 ;;  etc, where possible with print.foo versions
 
-print.foo=> (pprint (macroexpand '(print-sexp (str (+ 3 4) (-> 5 (* 6) (* 2)) 4))))
-(print.foo/print-and-return
- '(str (+ 3 4) (-> 5 (* 6) (* 2)) 4)
- " "
- (str
+print.foo=> (pprint 
+              (macroexpand 
+               '(print-sexp
+                  (let [a (-> 5
+                              inc       
+                              inc)
+                        bs (->> [1 2 3 4 5 6]
+                                (map inc)
+                                (filter odd?))]
+                    (println (apply + a bs))))))
+
+;; => 
+(let*
+ [a
+  (print.foo/print-and-return 'a " " (print.foo/print-> 5 inc inc))
+  bs
   (print.foo/print-and-return
-   '(+ 3 4)
+   'bs
    " "
-   (+
-    (print.foo/print-and-return '3 " " 3)
-    (print.foo/print-and-return '4 " " 4)))
-  (print.foo/print-> 5 (* 6) (* 2))
-  (print.foo/print-and-return '4 " " 4)))
+   (print.foo/print->> [1 2 3 4 5 6] (map inc) (filter odd?)))]
+ (print.foo/print-and-return
+  "let result: "
+  (do
+   (print.foo/print-and-return
+    '(println (apply + a bs))
+    " "
+    (println
+     (print.foo/print-and-return
+      '(apply + a bs)
+      " "
+      (apply + a bs)))))))
 
 
 print.foo=> (+ 1 2 (print-and-return "ONE:: " (inc 4)))
