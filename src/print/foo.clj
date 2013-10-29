@@ -121,7 +121,8 @@
                              (vector? x) :vector
                              (set? x)    :set
                              (map? x)    :map
-                             :else       :single)))
+                             (symbol? x) :sym
+                             :else       :default)))
 
 (defmulti parse-list (fn [[sym & _]]
                        sym))
@@ -141,7 +142,10 @@
         (for [[k v] m]
           [(parse-item k) (parse-item v)])))
 
-(defmethod parse-item :single [x]
+(defmethod parse-item :sym [s]
+  `(print-and-return '~s " " ~s))
+
+(defmethod parse-item :default [x]
   x)
 
 

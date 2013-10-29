@@ -1,4 +1,4 @@
-(defproject print-foo "0.4.3"
+(defproject print-foo "0.4.4"
   :description "A set of useful print-debugging tools"
   :url "https://github.com/AlexBaranosky/print-foo"
   :license {:name "MIT License"
@@ -13,4 +13,4 @@
              :1.4.0 {:dependencies [[org.clojure/clojure "1.4.0"]]}
              :1.5.0 {:dependencies [[org.clojure/clojure "1.5.1"]]}}
    :aliases {"run-tests" ["with-profile" "1.3.0:1.4.0:1.5.0" "test"]
-            "slamhound" ["run" "-m" "slam.hound"]})
+             "slamhound" ["run" "-m" "slam.hound"]})
