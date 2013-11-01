@@ -1,4 +1,4 @@
-(defproject print-foo "0.4.4"
+(defproject print-foo "0.4.5"
   :description "A set of useful print-debugging tools"
   :url "https://github.com/AlexBaranosky/print-foo"
   :license {:name "MIT License"

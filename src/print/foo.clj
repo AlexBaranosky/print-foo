@@ -116,12 +116,16 @@
 
 ;;; `print-sexp` print.foo's code-walking macro :)
 
+(defn- resolves-to-fn? [x]
+  (boolean (some-> x resolve fn?)))
+
 (defmulti parse-item (fn [x]
                        (cond (list? x)   :list
                              (vector? x) :vector
                              (set? x)    :set
                              (map? x)    :map
-                             (symbol? x) :sym
+                             (and (symbol? x)
+                                  (resolves-to-fn? x)) :sym
                              :else       :default)))
 
 (defmulti parse-list (fn [[sym & _]]
@@ -190,4 +194,3 @@
   "Diagnostic tool for printing the values at each step of a given s-expression"
   [sexp]
   (parse-item sexp))
-
