@@ -117,7 +117,7 @@
 ;;; `print-sexp` print.foo's code-walking macro :)
 
 (defn- resolves-to-fn? [x]
-  (boolean (some-> x resolve fn?)))
+  (boolean (some-> x resolve deref fn?)))
 
 (defmulti parse-item (fn [x]
                        (cond (list? x)   :list
@@ -125,7 +125,7 @@
                              (set? x)    :set
                              (map? x)    :map
                              (and (symbol? x)
-                                  (resolves-to-fn? x)) :sym
+                                  (not (resolves-to-fn? x))) :sym
                              :else       :default)))
 
 (defmulti parse-list (fn [[sym & _]]
