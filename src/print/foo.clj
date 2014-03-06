@@ -81,6 +81,32 @@
                     sym [test `(print-and-return "test: " '~test "\nvalue: " ~expr)]]
                 sym)))
 
+(defmacro print-cond->
+  "Diagnostic tool for printing the values at each step of a `cond->`"
+  [& body]
+  (cons 'cond->
+        (cons (first body)
+              (for [[test expr] (partition 2 (rest body))
+                    sym [test `((fn [x#]
+                                  (print-and-return "test: " '~test
+                                                    "  value: " (~(first expr)
+                                                                 x#
+                                                                 ~@(rest expr)))))]]
+                sym))))
+
+(defmacro print-cond->>
+  "Diagnostic tool for printing the values at each step of a `cond->>`"
+  [& body]
+  (cons 'cond->>
+        (cons (first body)
+              (for [[test expr] (partition 2 (rest body))
+                    sym [test `((fn [x#]
+                                  (print-and-return "test: " '~test
+                                                    "  value: " (~(first expr)
+                                                                 ~@(rest expr)
+                                                                 x#))))]]
+                sym))))
+
 (defmacro print-defn
   "Diagnostic tool for printing the values at each step of a `defn`"
   [fn-name arg-vec & body]
@@ -158,6 +184,13 @@
 
 (defmethod parse-list '->> [[_ & args]]
   `(print->> ~@args))
+
+(defmethod parse-list 'cond-> [[_ & args]]
+  `(print-cond-> ~@args))
+
+(defmethod parse-list 'cond->> [[_ & args]]
+  `(print-cond->> ~@args))
+
 
 (defmethod parse-list 'let [[_ & [bindings & body]]]
   (let [bdg-names (take-nth 2 bindings)

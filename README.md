@@ -58,6 +58,28 @@ print.foo=> (print-cond nil 2 3 4)
 test: 3 value: 4
 4
 
+print.foo=> (print-cond-> {}
+                          (pos? 1)
+                          (assoc :a 1)
+
+                          (pos? 2)
+                          (merge {:b 2})
+
+                          (neg? 2)
+                          (merge {:c 3}))
+test: (pos? 1)  value: {:a 1}
+test: (pos? 2)  value: {:a 1, :b 2}
+{:b 2, :a 1}
+
+(print-cond->> [1 2 3]
+               (pos? 1)
+               (map inc)
+
+               (neg? 2)
+               (map dec))
+test: (pos? 1)  value: (2 3 4)
+(2 3 4)
+
 print.foo=> (print-if (odd? 9) 1 2)
 (odd? 9) true
 1 1
