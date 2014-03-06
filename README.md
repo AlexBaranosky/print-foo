@@ -7,7 +7,7 @@ Just add "print-" to the front of a normal `->>`, `->`, `let`, `defn`, `defn-`, 
 ## Leiningen
 
 ```clj
-[print-foo "0.4.2"]
+[print-foo "0.5.0"]
 ```
 
 ## Usage
