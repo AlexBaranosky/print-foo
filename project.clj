@@ -4,7 +4,7 @@
   :license {:name "MIT License"
             :url "http://mit-license.org/"}
   :dependencies [[org.clojure/clojure "1.5.1"]
-                 [gui-diff "0.6.4"]]
+                 [gui-diff "0.6.6"]]
   :profiles {:dev {:dependencies [[jonase/kibit "0.0.3"]
                                   [org.clojars.runa/conjure "2.2.0"]
                                   [slamhound "1.3.3"]]
