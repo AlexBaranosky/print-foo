@@ -228,7 +228,7 @@
   [sexp]
   (parse-item sexp))
 
-(defn- wrap-middleware-logging
+(defn- wrap-middleware-debugging
   [handler middleware-name {:keys [get-in summarize? timings?]
                             :or {get-in []
                                  summarize? true
@@ -264,9 +264,9 @@
         logging-mws (for [[summarize? mw-name] (map list
                                                     summarize?-determinations
                                                     mw-names)]
-                      `(wrap-middleware-logging ~mw-name {:summarize? ~summarize?
-                                                          :get-in ~get-in
-                                                          :timings? ~timings?}))]
+                      `(wrap-middleware-debugging ~mw-name {:summarize? ~summarize?
+                                                            :get-in ~get-in
+                                                            :timings? ~timings?}))]
     `(-> ~handler
          ~@(interleave middlewares logging-mws))))
 
@@ -288,7 +288,7 @@
   (if-not (map? (first options+handler+middlewares))
     (let [handler (first options+handler+middlewares)
           middlewares (rest options+handler+middlewares)]
-      (#'interleave-middlewares  {}))
+      (#'interleave-middlewares handler middlewares {}))
     (let [options (first options+handler+middlewares)
           handler (second options+handler+middlewares)
           middlewares (rest (rest options+handler+middlewares))]
