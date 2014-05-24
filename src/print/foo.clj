@@ -227,3 +227,69 @@
   "Diagnostic tool for printing the values at each step of a given s-expression"
   [sexp]
   (parse-item sexp))
+
+(defn- wrap-middleware-logging
+  [handler middleware-name {:keys [get-in summarize? timings?]
+                            :or {get-in []
+                                 summarize? true
+                                 timings? false}}]
+  (fn [request]
+    (print-and-return (str "REQUEST - GOING INTO: " middleware-name))
+    (print-and-return (clojure.core/get-in request get-in))
+    (let [start (System/currentTimeMillis)
+          result (handler request)
+          end (System/currentTimeMillis)
+          result (-> result
+                     (cond->
+                      timings?
+                      (update-in [::timings] #(conj (or % [])
+                                                    {:middleware middleware-name
+                                                     :middleware-elapsed (- end start)}))))]
+      (print-and-return (str "RESPONSE - COMING OUT OF: " middleware-name))
+      (print-and-return (clojure.core/get-in result get-in))
+      (if (and timings? summarize?)
+        (do
+          (print-and-return {:middleware-timings (::timings result)})
+          (dissoc result ::timings))
+        result))))
+
+(defn- interleave-middlewares
+  [handler middlewares {:keys [get-in timings?]
+                        :or {get-in []
+                             timings? false}}]
+  (let [summarize?-determinations (conj (vec (repeat (dec (count middlewares))
+                                                     false))
+                                        true)
+        mw-names (map str middlewares)
+        logging-mws (for [[summarize? mw-name] (map list
+                                                    summarize?-determinations
+                                                    mw-names)]
+                      `(wrap-middleware-logging ~mw-name {:summarize? ~summarize?
+                                                          :get-in ~get-in
+                                                          :timings? ~timings?}))]
+    `(-> ~handler
+         ~@(interleave middlewares logging-mws))))
+
+(defmacro middleware->
+  "Log middleware options are:
+
+   {:get-in <path to print into the request and response>
+    :timings? <print timing info for each handler?>
+
+  Ex. (middleware->
+       {:get-in [:session]
+        :timings? true}}
+       my-handler
+       wrap-exception-handling
+       wrap-params)"
+  {:arglists '([handler & middlewares]
+                 [handler options & middlewares])}
+  [& options+handler+middlewares]
+  (if-not (map? (first options+handler+middlewares))
+    (let [handler (first options+handler+middlewares)
+          middlewares (rest options+handler+middlewares)]
+      (#'interleave-middlewares  {}))
+    (let [options (first options+handler+middlewares)
+          handler (second options+handler+middlewares)
+          middlewares (rest (rest options+handler+middlewares))]
+      (#'interleave-middlewares handler middlewares options))))

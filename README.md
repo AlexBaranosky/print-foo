@@ -142,6 +142,43 @@ print.foo> (+ 1 2 (tap (inc 4)))
  *** 5
 8
 
+print.foo> (middleware->
+            {:get-in [:session]
+             :timings? true}}
+            my-handler
+            wrap-exception-handling
+            wrap-params)
+
+(defn m1 [x]
+  (println x)
+  x)
+(defn m2 [x]
+  (fn [y]
+    (x (assoc y :m2 true))))
+(defn m3 [x]
+  (fn [y]
+    (x (assoc y :m3 true))))
+
+((middleware-> {:timings? false
+                :get-in [:session]}
+               m1
+               m2
+               m3)
+
+ {:session {:token 1}})
+
+;; prints:
+
+"REQUEST - GOING INTO: m3"
+{:token 1}
+"REQUEST - GOING INTO: m2"
+{:token 1}
+{:m2 true, :m3 true, :session {:token 1}}
+"RESPONSE - COMING OUT OF: m2"
+{:token 1}
+"RESPONSE - COMING OUT OF: m3"
+{:token 1}
+
 ```
 
 ## Author
