@@ -18,7 +18,13 @@
 (print-defn- g2 [x [y] {:keys [d] :as e}] (+ x y d (count e)))
 
 (deftest test-print-and-return
-  (is (= 1 (print-and-return "ONE:: " (inc 0)))))
+  (is (= 2 (inc (print-and-return "ONE:: " (inc 0))))))
+
+(deftest test-tap
+  (is (= 2 (inc (tap "ONE??:: " (inc 0))))))
+
+(deftest test-look
+  (is (= 2 (inc (look (inc 0))))))
 
 (deftest test-print-print-defn
   (a)

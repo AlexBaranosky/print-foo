@@ -16,6 +16,73 @@ Just add "print-" to the front of a normal `->>`, `->`, `let`, `defn`, `defn-`, 
 print.foo=> (use 'print.foo)
 nil
 
+print.foo=> (+ 1 2 (print-and-return "ONE:: " (inc 4)))
+ONE:: 4
+7
+
+print.foo> (- 1000 (tap "RESULT:: " (+ 1 2 (inc 4))))
+ *** RESULT:: 8
+8
+
+print.foo> (def a (inc 4))
+print.foo> (- 1000 (+ 1 2 (look a)))
+ *** A:: 8
+8
+
+print.foo> (- 1000 (look (+ 1 2 (inc 4))))
+ *** (+ 1 2 (INC 4)):: 8
+8
+
+print.foo=> (print-sexp (str (+ 3 4) (+ 5 (* 6 2)) 4))
+3 3
+4 4
+(+ 3 4) 7
+5 5
+6 6
+2 2
+(* 6 2) 12
+(+ 5 (* 6 2)) 17
+4 4
+(str (+ 3 4) (+ 5 (* 6 2)) 4) "7174"
+
+
+;; `print-sexp` is a code-walking macro that replaces
+;; normal code like ->, ->>, let, cond, if, 
+;; etc, where possible with print.foo versions, and
+;; wraps every sexp in print-and-return
+
+print.foo=> (pprint 
+              (macroexpand 
+               '(print-sexp
+                  (let [a (-> 5
+                              inc       
+                              inc)
+                        bs (->> [1 2 3 4 5 6]
+                                (map inc)
+                                (filter odd?))]
+                    (println (apply + a bs))))))
+
+;; => 
+(let*
+ [a
+  (print.foo/print-and-return 'a " " (print.foo/print-> 5 inc inc))
+  bs
+  (print.foo/print-and-return
+   'bs
+   " "
+   (print.foo/print->> [1 2 3 4 5 6] (map inc) (filter odd?)))]
+ (print.foo/print-and-return
+  "let result: "
+  (do
+   (print.foo/print-and-return
+    '(println (apply + a bs))
+    " "
+    (println
+     (print.foo/print-and-return
+      '(apply + a bs)
+      " "
+      (apply + a bs)))))))
+
 print.foo=> (print->> [1 2 3] (mapv inc) (mapv dec))
 [1 2 3] [1 2 3]
 (mapv inc) [2 3 4]
@@ -84,63 +151,6 @@ print.foo=> (print-if (odd? 9) 1 2)
 (odd? 9) true
 1 1
 1
-
-print.foo=> (print-sexp (str (+ 3 4) (+ 5 (* 6 2)) 4))
-3 3
-4 4
-(+ 3 4) 7
-5 5
-6 6
-2 2
-(* 6 2) 12
-(+ 5 (* 6 2)) 17
-4 4
-(str (+ 3 4) (+ 5 (* 6 2)) 4) "7174"
-
-
-;; `print-sexp` replaces normal code like ->, ->>, let, cond, if, 
-;;  etc, where possible with print.foo versions
-
-print.foo=> (pprint 
-              (macroexpand 
-               '(print-sexp
-                  (let [a (-> 5
-                              inc       
-                              inc)
-                        bs (->> [1 2 3 4 5 6]
-                                (map inc)
-                                (filter odd?))]
-                    (println (apply + a bs))))))
-
-;; => 
-(let*
- [a
-  (print.foo/print-and-return 'a " " (print.foo/print-> 5 inc inc))
-  bs
-  (print.foo/print-and-return
-   'bs
-   " "
-   (print.foo/print->> [1 2 3 4 5 6] (map inc) (filter odd?)))]
- (print.foo/print-and-return
-  "let result: "
-  (do
-   (print.foo/print-and-return
-    '(println (apply + a bs))
-    " "
-    (println
-     (print.foo/print-and-return
-      '(apply + a bs)
-      " "
-      (apply + a bs)))))))
-
-
-print.foo=> (+ 1 2 (print-and-return "ONE:: " (inc 4)))
-ONE:: 4
-7
-
-print.foo> (+ 1 2 (tap (inc 4)))
- *** 5
-8
 
 print.foo> (middleware->
             {:get-in [:session]

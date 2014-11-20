@@ -1,6 +1,7 @@
 (ns print.foo
   "Macros for printing diagnostic information while debugging or developing."
-  (:require [gui.diff :as gui-diff]))
+  (:require [clojure.string :as str]
+            [gui.diff :as gui-diff]))
 
 
 (defn- single-destructuring-arg->form+name
@@ -42,6 +43,12 @@
 (def tap
   "Quicker-to-type version of `print-and-return` with \" *** \" appended to the front"
   (partial print-and-return " *** "))
+
+(defmacro look
+  "Like print-and-return, except always prefixes with the uppercased sexp followed by ':: '"
+  [sexp]
+  `(tap ~(str/upper-case (str sexp ":: "))
+        ~sexp))
 
 (defmacro print->
   "Diagnostic tool for printing the values at each step of a `->`"
