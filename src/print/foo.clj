@@ -235,7 +235,7 @@
   [sexp]
   (parse-item sexp))
 
-(defn- wrap-middleware-debugging
+(defn wrap-middleware-debugging
   [handler middleware-name {:keys [get-in summarize? timings?]
                             :or {get-in []
                                  summarize? true
