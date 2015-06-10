@@ -74,6 +74,18 @@
                                  seconds)))
        (print-and-return "let result: " (do ~@body)))))
 
+(defmacro print-and
+  "Diagnostic tool for printing the values at each step of an `and`"
+  [& body]
+  (cons 'and (for [expr body]
+               `(print-and-return '~expr " " ~expr))))
+
+(defmacro print-or
+  "Diagnostic tool for printing the values at each step of an `or`"
+  [& body]
+  (cons 'or (for [expr body]
+              `(print-and-return '~expr " " ~expr))))
+
 (defmacro print-if
   "Diagnostic tool for printing the values at each step of an `if`"
   [test expr1 expr2]
@@ -205,6 +217,12 @@
     `(print-let ~(vec (interleave bdg-names
                                   (map parse-item bdg-vals)))
                 ~@(map parse-item body))))
+
+(defmethod parse-list 'and [[_ & args]]
+  `(print-and ~@(map parse-item args)))
+
+(defmethod parse-list 'or [[_ & args]]
+  `(print-or ~@(map parse-item args)))
 
 (defmethod parse-list 'if [[_ & args]]
   `(print-if ~@(map parse-item args)))
