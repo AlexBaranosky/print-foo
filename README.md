@@ -17,7 +17,7 @@ print.foo=> (use 'print.foo)
 nil
 
 print.foo=> (+ 1 2 (print-and-return "ONE:: " (inc 4)))
-ONE:: 4
+ONE:: 5
 7
 
 print.foo> (- 1000 (tap "RESULT:: " (+ 1 2 (inc 4))))
