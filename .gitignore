@@ -1,3 +1,6 @@
+/.nrepl-port
+/.idea
+/print-foo.iml
 /target
 /lib
 /classes

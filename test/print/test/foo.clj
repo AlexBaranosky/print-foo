@@ -1,7 +1,6 @@
 (ns print.test.foo
-  (:require [print.foo :refer :all]
-            [clojure.test :refer :all]
-            [conjure.core :refer :all]))
+  (:use [print.foo]
+        [clojure.test]))
 
 (print-defn a [])
 (print-defn b [x y] (+ x y))
