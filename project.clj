@@ -1,4 +1,4 @@
-(defproject print-foo-cljs "1.0.0"
+(defproject print-foo-cljs "2.0.0"
   :description "A set of useful print-debugging tools for both Clojure & Clojurescript"
   :url "https://github.com/madvas/print-foo-cljs"
   :license {:name "MIT License"
