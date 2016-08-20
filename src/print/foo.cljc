@@ -7,6 +7,7 @@
        :cljs [cljs.pprint :as pp])))
 
 (def ^:dynamic *print-fn* pp/pprint)
+(def ^:dynamic *enabled* true)
 
 (defn ^:private single-destructuring-arg->form+name
   "Turns any one binding arg (which may be a destructuring binding) into a vector
@@ -39,9 +40,10 @@
   "Diagnostic tool for printing the result of evaluating an s-expression.
    Any initial args over 1, are printed as strings, and generally used as a label."
   [& xs]
-  (when (seq (butlast xs))
-    (print (apply str (butlast xs))))
-  (*print-fn* (last xs))
+  (when *enabled*
+    (when (seq (butlast xs))
+      (print (apply str (butlast xs))))
+    (*print-fn* (last xs)))
   (last xs))
 
 (def tap

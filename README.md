@@ -11,7 +11,7 @@ If you're using [Cursive](https://cursive-ide.com/), I suggest creating macro or
 ## Leiningen
 
 ```clj
-[print-foo-cljs "2.0.1"]
+[print-foo-cljs "2.0.2"]
 ```
 
 ## Usage
