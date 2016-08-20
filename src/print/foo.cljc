@@ -6,6 +6,7 @@
     [clojure.pprint :as pp]
        :cljs [cljs.pprint :as pp])))
 
+(def ^:dynamic *print-fn* pp/pprint)
 
 (defn ^:private single-destructuring-arg->form+name
   "Turns any one binding arg (which may be a destructuring binding) into a vector
@@ -40,7 +41,7 @@
   [& xs]
   (when (seq (butlast xs))
     (print (apply str (butlast xs))))
-  (pp/pprint (last xs))
+  (*print-fn* (last xs))
   (last xs))
 
 (def tap
