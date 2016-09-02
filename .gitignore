@@ -1,3 +1,7 @@
+/pom.xml.asc
+/.nrepl-port
+/.idea
+/print-foo.iml
 /target
 /lib
 /classes
