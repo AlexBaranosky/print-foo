@@ -1,5 +1,6 @@
 (ns print.foo
   "Macros for printing diagnostic information while debugging or developing."
+  (:refer-clojure :exclude [*print-fn*])
   (:require
     [clojure.string :as str]
     #?(:clj
